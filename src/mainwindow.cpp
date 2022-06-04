@@ -17,11 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
   // text editor
   auto *text = new QTextEdit(this);
-  text->setFontPointSize(16);
   setCentralWidget(text);
-  connect(text, &QTextEdit::textChanged, this, [=]() {
-    sync_button->setText("sync");
-  });
 
   // dock
   auto *dock = new QDockWidget;
@@ -35,26 +31,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   dock->setWindowTitle("preview");
 
   auto sync = [=]() {
-    char temp[] = "/tmp/xynote/XXXXXX.tmp";
-    int fd = mkstemps(temp, 4);
-
-    QFile tmp_file;
-    tmp_file.open(fd, QFile::NewOnly); // note flag
-    tmp_file.write(text->toPlainText().toUtf8());
-    tmp_file.close();
-
     QProcess process;
     process.start("pandoc", QStringList() << "-f"
                                           << "markdown"
                                           << "-t"
-                                          << "html" << temp);
+                                          << "html");
+
+    process.write(text->toPlainText().toUtf8());
+    process.closeWriteChannel();
 
     if (process.waitForFinished()) {
-      QByteArray array = process.readAllStandardOutput();
-      view->setHtml(array);
+      view->setHtml(process.readAllStandardOutput());
       sync_button->setText("synced");
     } else {
-      QMessageBox::information(this, "info", "internal error");
+      QMessageBox::warning(this, "warning", "internal error");
     }
   };
 
@@ -75,11 +65,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
   // timer
   auto *timer = new QTimer(this);
-  timer->start(10000);
+  timer->start(3000);
 
   // preview connect function
   connect(timer, &QTimer::timeout, this, sync);
   connect(sync_button, &QPushButton::clicked, this, sync);
+  connect(text, &QTextEdit::textChanged, this, [=]() {
+    sync_button->setText("sync");
+  });
 }
 
 MainWindow::~MainWindow() = default;
