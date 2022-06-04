@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-  this->setFixedSize(800, 600);
+  this->setWindowTitle("xynote");
+  this->setFixedSize(1400, 900);
 
   auto *toolbar = new QToolBar(this);
-  this->addToolBar(Qt::LeftToolBarArea, toolbar);
+  this->addToolBar(Qt::TopToolBarArea, toolbar);
 
   auto *button = new QPushButton("open");
   toolbar->addWidget(button);
@@ -15,13 +16,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   auto *dock = new QDockWidget;
   auto *view = new QWebEngineView;
   dock->setWidget(view);
+  dock->setFixedSize(500, 900);
+  dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+  dock->setWindowTitle("preview");
   addDockWidget(Qt::RightDockWidgetArea, dock);
 
   connect(button, &QPushButton::clicked, this, [=]() {
     this->file_name = QFileDialog::getOpenFileName(this, "open");
     QFileInfo file_info(this->file_name);
     QString suffix = file_info.suffix();
-    //    qDebug() << suffix;
     if (suffix == "md") {
       QFile ori_file(this->file_name);
       ori_file.open(QIODevice::ReadOnly);
@@ -32,18 +35,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   });
 
   connect(text, &QTextEdit::textChanged, this, [=]() {
-    QString tmp_file_name = this->file_name + ".tmp";
+    char temp[] = "/tmp/xynote/XXXXXX.tmp";
+    int fd = mkstemps(temp, 4);
 
-    QFile tmp_file(tmp_file_name);
-    tmp_file.open(QFile::NewOnly);
+    QFile tmp_file;
+    tmp_file.open(fd, QFile::NewOnly); // note flag
     tmp_file.write(text->toPlainText().toUtf8());
+    tmp_file.close();
 
     QProcess process;
-    process.start("pandoc", QStringList() << "-t"
-                                          << "html" << tmp_file_name);
-    process.waitForFinished();
+    process.start("pandoc", QStringList() << "-f"
+                                          << "markdown"
+                                          << "-t"
+                                          << "html" << temp);
 
-    view->setHtml(process.readAllStandardOutput());
+    if (process.waitForFinished()) {
+      QByteArray array = process.readAllStandardOutput();
+      view->setHtml(array);
+    } else {
+      QMessageBox::information(this, "info", "internal error");
+    }
   });
 }
 
