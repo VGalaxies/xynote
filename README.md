@@ -10,3 +10,13 @@
 
 - cmake
 - xmake
+
+## dependency
+
+- pandoc
+
+## preview synchronization
+
+- text changed
+- button clicked
+- timer

@@ -1,27 +1,36 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+  // main
   this->setWindowTitle("xynote");
   this->setFixedSize(1400, 900);
 
+  // toolbar
   auto *toolbar = new QToolBar(this);
   this->addToolBar(Qt::TopToolBarArea, toolbar);
 
-  auto *button = new QPushButton("open");
-  toolbar->addWidget(button);
+  // button
+  auto *open_button = new QPushButton("open");
+  toolbar->addWidget(open_button);
 
+  // text editor
   auto *text = new QTextEdit(this);
+  text->setFontPointSize(16);
   setCentralWidget(text);
 
+  // dock
   auto *dock = new QDockWidget;
+  addDockWidget(Qt::RightDockWidgetArea, dock);
+
+  // view
   auto *view = new QWebEngineView;
   dock->setWidget(view);
   dock->setFixedSize(500, 900);
   dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
   dock->setWindowTitle("preview");
-  addDockWidget(Qt::RightDockWidgetArea, dock);
 
-  connect(button, &QPushButton::clicked, this, [=]() {
+  // open connect function
+  connect(open_button, &QPushButton::clicked, this, [=]() {
     this->file_name = QFileDialog::getOpenFileName(this, "open");
     QFileInfo file_info(this->file_name);
     QString suffix = file_info.suffix();
@@ -34,7 +43,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     }
   });
 
-  connect(text, &QTextEdit::textChanged, this, [=]() {
+  // timer
+  auto *timer = new QTimer(this);
+  timer->start(500);
+
+  // preview connect function
+  connect(timer, &QTimer::timeout, this, [=]() {
     char temp[] = "/tmp/xynote/XXXXXX.tmp";
     int fd = mkstemps(temp, 4);
 
