@@ -6,10 +6,9 @@
 
 [document-previewer](https://github.com/VGalaxies/document-previewer)
 
-## build
+## build system
 
-- cmake
-- xmake
+- cmake (xmake)
 
 ## dependency
 

@@ -14,9 +14,6 @@
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
-private:
-  QString file_name{};
-
 public:
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override;
