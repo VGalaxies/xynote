@@ -5,65 +5,71 @@
 #include <QMessageBox>
 #include <QProcess>
 
-XYNote::XYNote(QWidget *parent) : QMainWindow(parent), ui(new Ui::XYNote) {
-  // main
+void XYNote::render() {
+  QProcess process;
+  process.start("pandoc", QStringList() << "-f"
+                                        << "markdown"
+                                        << "-t"
+                                        << "html");
+
+  process.write(ui->text->toPlainText().toUtf8());
+  process.closeWriteChannel();
+
+  if (process.waitForFinished()) {
+    ui->view->setHtml(process.readAllStandardOutput());
+    syncState->setText("synced");
+  } else {
+    QMessageBox::warning(this, "warning", "internal error");
+  }
+}
+
+void XYNote::openFile(const QString &path) {
+  QFileInfo fileInfo(path);
+  QString suffix = fileInfo.suffix();
+  if (suffix == "md") {
+    QFile file(path);
+    file.open(QIODevice::ReadOnly);
+    ui->text->setPlainText(file.readAll());
+  } else {
+    QMessageBox::information(this, "info", "only support markdown file");
+  }
+
+  this->render();
+  emit pathChanged(fileInfo.path());
+}
+
+void XYNote::open() {
+  QString fileName = QFileDialog::getOpenFileName(this, "open");
+  this->openFile(fileName);
+}
+
+XYNote::XYNote(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::XYNote),
+      syncState(new QLabel("unsynced")), wordCount(new QLabel("0 words")),
+      syncTimer(new QTimer), sider(new Sider) {
+  // ui
   ui->setupUi(this);
 
   // status
-  syncState = new QLabel("unsynced");
   ui->statusBar->addPermanentWidget(syncState);
-  wordCount = new QLabel("0 words");
   ui->statusBar->addWidget(wordCount);
-
-  // sync
-  auto sync = [=]() {
-    QProcess process;
-    process.start("pandoc", QStringList() << "-f"
-                                          << "markdown"
-                                          << "-t"
-                                          << "html");
-
-    process.write(ui->text->toPlainText().toUtf8());
-    process.closeWriteChannel();
-
-    if (process.waitForFinished()) {
-      ui->view->setHtml(process.readAllStandardOutput());
-      syncState->setText("synced");
-    } else {
-      QMessageBox::warning(this, "warning", "internal error");
-    }
-  };
-
-  // open connect function
-  connect(ui->actionOpen, &QAction::triggered, this, [=]() {
-    QString fileName = QFileDialog::getOpenFileName(this, "open");
-    QFileInfo fileInfo(fileName);
-    QString suffix = fileInfo.suffix();
-    if (suffix == "md") {
-      QFile file(fileName);
-      file.open(QIODevice::ReadOnly);
-      ui->text->setPlainText(file.readAll());
-    } else {
-      QMessageBox::information(this, "info", "only support markdown file");
-    }
-    sync();
-  });
-
-  // timer
-  syncTimer = new QTimer(this);
-  syncTimer->start(10000);
-
-  // preview connect function
-  connect(syncTimer, &QTimer::timeout, this, sync);
-  connect(ui->actionSync, &QAction::triggered, this, sync);
-  ui->actionSync->setShortcut(tr("Ctrl+S"));
   connect(ui->text, &QPlainTextEdit::textChanged, this, [=]() {
     syncState->setText("unsynced");
     wordCount->setText(tr("%1 words").arg(ui->text->toPlainText().size()));
   });
 
-  // sider
-  sider = new Sider;
+  // open
+  connect(ui->actionOpen, &QAction::triggered, this, &XYNote::open);
+
+  // render
+  syncTimer->start(10000);
+  connect(syncTimer, &QTimer::timeout, this, &XYNote::render);
+  connect(ui->actionSync, &QAction::triggered, this, &XYNote::render);
+  ui->actionSync->setShortcut(tr("Ctrl+S"));
+
+  // connect sider
+  connect(this, &XYNote::pathChanged, ui->sider, &Sider::changeDir);
+  connect(ui->sider, &Sider::fileChanged, this, &XYNote::openFile);
 }
 
 XYNote::~XYNote() {

@@ -28,7 +28,7 @@
   <widget class="QWidget" name="container">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="Sider" name="widget" native="true">
+     <widget class="Sider" name="sider" native="true">
       <property name="minimumSize">
        <size>
         <width>290</width>

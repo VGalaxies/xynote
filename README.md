@@ -6,16 +6,29 @@
 
 [document-previewer](https://github.com/VGalaxies/document-previewer)
 
-## build system
-
-- cmake (xmake)
-
 ## dependency
 
-- pandoc
+- qt
+- cmake
+- pandoc (binary)
 
 ## preview synchronization
 
 - text changed
 - button clicked
 - timer
+
+## connection
+
+- slot
+- signal
+
+## qrc
+
+`set(CMAKE_AUTORCC ON)`
+
+## ui
+
+`set(CMAKE_AUTOUIC ON)`
+
+Qt Designer

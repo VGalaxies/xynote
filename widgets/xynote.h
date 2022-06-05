@@ -18,6 +18,14 @@ public:
   explicit XYNote(QWidget *parent = nullptr);
   ~XYNote() override;
 
+signals:
+  void pathChanged(const QString &path);
+
+private slots:
+  void render();
+  void open();
+  void openFile(const QString &path);
+
 private:
   Ui::XYNote *ui{};
   QLabel *syncState;

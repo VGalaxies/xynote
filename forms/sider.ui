@@ -29,17 +29,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="lineEdit">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="placeholderText">
-       <string>Search files...</string>
-      </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="upper">
        <property name="text">
         <string/>
        </property>
