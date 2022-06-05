@@ -1,14 +1,18 @@
-#include "xynote.h"
 #include "../forms/ui_xynote.h"
+#include <widgets/xynote.h>
+
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QProcess>
 
 XYNote::XYNote(QWidget *parent) : QMainWindow(parent), ui(new Ui::XYNote) {
   // main
   ui->setupUi(this);
 
   // status
-  auto *syncState = new QLabel("unsynced"); // mem leak
+  syncState = new QLabel("unsynced");
   ui->statusBar->addPermanentWidget(syncState);
-  auto *wordCount = new QLabel("0 words"); // mem leak
+  wordCount = new QLabel("0 words");
   ui->statusBar->addWidget(wordCount);
 
   // sync
@@ -36,9 +40,9 @@ XYNote::XYNote(QWidget *parent) : QMainWindow(parent), ui(new Ui::XYNote) {
     QFileInfo fileInfo(fileName);
     QString suffix = fileInfo.suffix();
     if (suffix == "md") {
-      QFile ori_file(fileName);
-      ori_file.open(QIODevice::ReadOnly);
-      ui->text->setPlainText(ori_file.readAll());
+      QFile file(fileName);
+      file.open(QIODevice::ReadOnly);
+      ui->text->setPlainText(file.readAll());
     } else {
       QMessageBox::information(this, "info", "only support markdown file");
     }
@@ -46,18 +50,26 @@ XYNote::XYNote(QWidget *parent) : QMainWindow(parent), ui(new Ui::XYNote) {
   });
 
   // timer
-  auto *timer = new QTimer(this);
-  timer->start(3000);
+  syncTimer = new QTimer(this);
+  syncTimer->start(10000);
 
   // preview connect function
-  connect(timer, &QTimer::timeout, this, sync);
+  connect(syncTimer, &QTimer::timeout, this, sync);
   connect(ui->actionSync, &QAction::triggered, this, sync);
+  ui->actionSync->setShortcut(tr("Ctrl+S"));
   connect(ui->text, &QPlainTextEdit::textChanged, this, [=]() {
     syncState->setText("unsynced");
     wordCount->setText(tr("%1 words").arg(ui->text->toPlainText().size()));
   });
+
+  // sider
+  sider = new Sider;
 }
 
 XYNote::~XYNote() {
   delete ui;
+  delete syncState;
+  delete wordCount;
+  delete syncTimer;
+  delete sider;
 }

@@ -14,10 +14,12 @@ set(CMAKE_AUTOUIC ON)
 
 set(
   PROJECT_SOURCES
-  src/main.cpp
-  src/xynote.cpp src/xynote.h
+  main.cpp
+  widgets/xynote.cpp widgets/xynote.h
+  widgets/sider.cpp widgets/sider.h
   resources/xynote.qrc
   forms/xynote.ui
+  forms/sider.ui
 )
 
 add_executable(${PROJECT_NAME})

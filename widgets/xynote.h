@@ -1,14 +1,9 @@
 #pragma once
 
+#include <QLabel>
 #include <QMainWindow>
-#include <QFileDialog>
-#include <QMenuBar>
-#include <QPushButton>
-#include <QTextEdit>
-#include <QToolBar>
-#include <QDebug>
-#include <QMessageBox>
-#include <QtWebEngineWidgets>
+#include <QTimer>
+#include <widgets/sider.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,4 +20,8 @@ public:
 
 private:
   Ui::XYNote *ui{};
+  QLabel *syncState;
+  QLabel *wordCount;
+  QTimer *syncTimer;
+  Sider *sider;
 };

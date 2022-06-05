@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1100</width>
     <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
+    <width>1100</width>
     <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
+    <width>1100</width>
     <height>600</height>
    </size>
   </property>
@@ -28,16 +28,32 @@
   <widget class="QWidget" name="container">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QPlainTextEdit" name="text">
+     <widget class="Sider" name="widget" native="true">
       <property name="minimumSize">
        <size>
-        <width>380</width>
+        <width>290</width>
         <height>600</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>380</width>
+        <width>290</width>
+        <height>600</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="text">
+      <property name="minimumSize">
+       <size>
+        <width>390</width>
+        <height>600</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>390</width>
         <height>600</height>
        </size>
       </property>
@@ -47,13 +63,13 @@
      <widget class="QWebEngineView" name="view">
       <property name="minimumSize">
        <size>
-        <width>380</width>
+        <width>390</width>
         <height>600</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>380</width>
+        <width>390</width>
         <height>600</height>
        </size>
       </property>
@@ -71,7 +87,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1100</width>
      <height>34</height>
     </rect>
    </property>
@@ -107,6 +123,13 @@
    <class>QWebEngineView</class>
    <extends>QWidget</extends>
    <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Sider</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/sider.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

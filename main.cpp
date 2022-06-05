@@ -1,5 +1,4 @@
-#include "xynote.h"
-
+#include <widgets/xynote.h>
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
