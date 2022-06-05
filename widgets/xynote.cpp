@@ -13,7 +13,7 @@ void XYNote::render() {
                                         << "html");
 
   process.write(ui->text->toPlainText().toUtf8());
-  process.closeWriteChannel();
+  process.closeWriteChannel(); // EOF
 
   if (process.waitForFinished()) {
     ui->view->setHtml(process.readAllStandardOutput());
@@ -30,12 +30,11 @@ void XYNote::openFile(const QString &path) {
     QFile file(path);
     file.open(QIODevice::ReadOnly);
     ui->text->setPlainText(file.readAll());
+    this->render();
+    emit pathChanged(fileInfo.path());
   } else {
     QMessageBox::information(this, "info", "only support markdown file");
   }
-
-  this->render();
-  emit pathChanged(fileInfo.path());
 }
 
 void XYNote::open() {
