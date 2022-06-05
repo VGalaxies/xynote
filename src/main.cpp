@@ -1,11 +1,12 @@
-#include "mainwindow.h"
+#include "xynote.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
-  QApplication a(argc, argv);
-  MainWindow w;
-  w.show();
+  QApplication app{argc, argv};
+  XYNote xynote{};
+
   QApplication::setWindowIcon(QIcon{":icon.svg"});
+  xynote.show();
   return QApplication::exec();
 }

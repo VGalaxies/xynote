@@ -10,13 +10,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # https://stackoverflow.com/questions/33633056/undefined-reference-to-vtable-for-mainwindow
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC ON)
 
 set(
   PROJECT_SOURCES
   src/main.cpp
-  src/mainwindow.cpp src/mainwindow.h
+  src/xynote.cpp src/xynote.h
   resources/xynote.qrc
+  forms/xynote.ui
 )
 
 add_executable(${PROJECT_NAME})
