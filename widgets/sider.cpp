@@ -3,6 +3,7 @@
 
 void Sider::changeDir(const QString &path) {
   currentPath = path.isEmpty() ? QDir::currentPath() : path;
+  ui->path->setText(currentPath.right(36));
   QDir::setCurrent(currentPath);
   auto index = model->setRootPath(currentPath);
   ui->directory->setRootIndex(index);
@@ -31,6 +32,7 @@ Sider::Sider(QWidget *parent)
 
   // set model
   QDir::setCurrent(currentPath);
+  ui->path->setText(currentPath.right(36));
   model->setRootPath(currentPath);
   ui->directory->setModel(model);
 
